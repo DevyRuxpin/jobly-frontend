@@ -2,6 +2,10 @@ import axios from "axios";
 
 const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:3001";
 
+// Simple in-memory cache
+const cache = new Map();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
 /** API Class.
  *
  * Static class tying together methods used to get/send to to the API.
@@ -23,11 +27,33 @@ class JoblyApi {
         ? data
         : {};
 
+    // Generate cache key for GET requests
+    const cacheKey = method === "get" ? `${endpoint}-${JSON.stringify(data)}` : null;
+
+    // Check cache for GET requests
+    if (method === "get" && cacheKey) {
+      const cached = cache.get(cacheKey);
+      if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+        console.debug("Cache hit:", cacheKey);
+        return cached.data;
+      }
+    }
+
     try {
-      return (await axios({ url, method, data, params, headers })).data;
+      const response = await axios({ url, method, data, params, headers });
+      
+      // Cache GET responses
+      if (method === "get" && cacheKey) {
+        cache.set(cacheKey, {
+          data: response.data,
+          timestamp: Date.now()
+        });
+      }
+
+      return response.data;
     } catch (err) {
       console.error("API Error:", err.response);
-      let message = err.response.data.error.message;
+      let message = err.response?.data?.error?.message || "An unexpected error occurred";
       throw Array.isArray(message) ? message : [message];
     }
   }
@@ -61,6 +87,8 @@ class JoblyApi {
   /** Apply to a job */
   static async applyToJob(username, id) {
     await this.request(`users/${username}/jobs/${id}`, {}, "post");
+    // Clear relevant caches
+    this.clearCache(`users/${username}`);
   }
 
   /** Get token for login from username, password. */
@@ -78,13 +106,19 @@ class JoblyApi {
   /** Save user profile page. */
   static async saveProfile(username, data) {
     let res = await this.request(`users/${username}`, data, "patch");
+    // Clear relevant caches
+    this.clearCache(`users/${username}`);
     return res.user;
   }
-}
 
-// for now, put token ("testuser" / "password" on class)
-JoblyApi.token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZ" +
-    "SI6InRlc3R1c2VyIiwiaXNBZG1pbiI6ZmFsc2UsImlhdCI6MTU5ODE1OTI1OX0." +
-    "FtrMwBQwe6Ue-glIFgz_Nf8XxRT2YecFCiSpYL0fCXc";
+  /** Clear cache for a specific endpoint */
+  static clearCache(endpoint) {
+    for (const key of cache.keys()) {
+      if (key.startsWith(endpoint)) {
+        cache.delete(key);
+      }
+    }
+  }
+}
 
 export default JoblyApi; 

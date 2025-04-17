@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import JoblyApi from "../api";
 import useLocalStorage from "../hooks/useLocalStorage";
 
@@ -17,28 +17,39 @@ function AuthContextProvider({ children }) {
   const [applicationIds, setApplicationIds] = useState(new Set([]));
 
   /** Load user info from API. Should only run once when token changes. */
-  useEffect(function loadUserInfo() {
+  const loadUserInfo = useCallback(async () => {
     console.debug("App useEffect loadUserInfo", "token=", token);
 
-    async function getCurrentUser() {
-      if (token) {
+    if (token) {
+      try {
+        JoblyApi.token = token;
+        let decodedToken;
         try {
-          JoblyApi.token = token;
-          let { username } = JSON.parse(atob(token.split(".")[1]));
-          let currentUser = await JoblyApi.getCurrentUser(username);
-          setCurrentUser(currentUser);
-          setApplicationIds(new Set(currentUser.applications));
+          decodedToken = JSON.parse(atob(token.split(".")[1]));
         } catch (err) {
-          console.error("App loadUserInfo: problem loading", err);
-          setCurrentUser(null);
+          console.error("Token parsing error:", err);
+          setToken(null);
+          setInfoLoaded(true);
+          return;
         }
-      }
-      setInfoLoaded(true);
-    }
 
+        const { username } = decodedToken;
+        let currentUser = await JoblyApi.getCurrentUser(username);
+        setCurrentUser(currentUser);
+        setApplicationIds(new Set(currentUser.applications));
+      } catch (err) {
+        console.error("App loadUserInfo: problem loading", err);
+        setCurrentUser(null);
+        setToken(null);
+      }
+    }
+    setInfoLoaded(true);
+  }, [token, setToken]);
+
+  useEffect(() => {
     setInfoLoaded(false);
-    getCurrentUser();
-  }, [token]);
+    loadUserInfo();
+  }, [loadUserInfo]);
 
   /** Handles site-wide logout. */
   function logout() {
@@ -85,8 +96,13 @@ function AuthContextProvider({ children }) {
   /** Apply to a job: make API call and update set of application IDs. */
   async function applyToJob(id) {
     if (hasAppliedToJob(id)) return;
-    await JoblyApi.applyToJob(currentUser.username, id);
-    setApplicationIds(new Set([...applicationIds, id]));
+    try {
+      await JoblyApi.applyToJob(currentUser.username, id);
+      setApplicationIds(new Set([...applicationIds, id]));
+    } catch (err) {
+      console.error("Error applying to job:", err);
+      throw err;
+    }
   }
 
   if (!infoLoaded) return null;
