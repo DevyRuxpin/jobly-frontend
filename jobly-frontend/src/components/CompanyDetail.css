@@ -1,0 +1,16 @@
+.CompanyDetail {
+  padding: 2rem 0;
+}
+
+.CompanyDetail h4 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #343a40;
+}
+
+.CompanyDetail p {
+  font-size: 1.1rem;
+  color: #6c757d;
+  margin-bottom: 2rem;
+} 

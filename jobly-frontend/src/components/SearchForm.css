@@ -1,0 +1,21 @@
+.SearchForm {
+  margin-bottom: 2rem;
+}
+
+.SearchForm form {
+  display: flex;
+  gap: 1rem;
+}
+
+.SearchForm input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+}
+
+.SearchForm button {
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+} 
