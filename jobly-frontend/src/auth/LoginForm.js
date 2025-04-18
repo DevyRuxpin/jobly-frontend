@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import "./LoginForm.css";
 
@@ -15,7 +15,7 @@ import "./LoginForm.css";
  */
 
 function LoginForm() {
-  const navigate = useNavigate();
+  const history = useHistory();
   const { login } = useAuth();
   const [formData, setFormData] = useState({
     username: "",
@@ -65,11 +65,11 @@ function LoginForm() {
     setIsSubmitting(true);
     try {
       await login(formData);
-      navigate("/");
+      history.push("/");
     } catch (err) {
       setErrors((e) => ({
         ...e,
-        form: err.message || "Invalid username/password",
+        form: err.message || "Login failed",
       }));
     } finally {
       setIsSubmitting(false);
