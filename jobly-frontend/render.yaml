@@ -5,4 +5,4 @@ services:
     staticPublishPath: build
     envVars:
       - key: REACT_APP_BASE_URL
-        value: https://jobly-backend-zp0b.onrender.com
+        value: https://jobly-backend-zp0b.onrender.com 
