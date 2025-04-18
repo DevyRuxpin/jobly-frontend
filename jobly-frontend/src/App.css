@@ -1,0 +1,102 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Custom styles */
+.navbar {
+  margin-bottom: 2rem;
+}
+
+.card {
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.alert {
+  margin-top: 1rem;
+}
+
+.btn {
+  margin: 0.5rem;
+}
+
+/* Loading spinner */
+.spinner-border {
+  display: block;
+  margin: 2rem auto;
+}
+
+/* Company and Job cards */
+.CompanyCard, .JobCard {
+  text-align: left;
+}
+
+.CompanyCard img {
+  max-width: 100px;
+  margin-bottom: 1rem;
+}
+
+/* Search form */
+.SearchForm {
+  margin-bottom: 2rem;
+}
+
+/* Profile form */
+.ProfileForm {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Navigation */
+.Navigation {
+  margin-bottom: 2rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+  
+  .card {
+    margin-bottom: 1rem;
+  }
+} 
