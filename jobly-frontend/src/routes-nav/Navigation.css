@@ -1,0 +1,36 @@
+.Navigation {
+  background-color: #f8f9fa;
+  padding: 1rem 0;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.Navigation .navbar-brand {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.Navigation .nav-link {
+  padding: 0.5rem 1rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.Navigation .nav-link:hover {
+  color: #007bff;
+}
+
+.Navigation .btn {
+  margin-left: 1rem;
+}
+
+@media (max-width: 768px) {
+  .Navigation .navbar-nav {
+    margin-top: 1rem;
+  }
+  
+  .Navigation .btn {
+    margin: 0.5rem 0;
+    width: 100%;
+  }
+}

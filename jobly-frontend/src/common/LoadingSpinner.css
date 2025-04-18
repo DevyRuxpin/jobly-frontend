@@ -1,0 +1,11 @@
+.LoadingSpinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.LoadingSpinner .spinner-border {
+  width: 3rem;
+  height: 3rem;
+}

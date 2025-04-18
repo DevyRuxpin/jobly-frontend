@@ -1,0 +1,13 @@
+.JobList {
+  padding: 2rem 0;
+}
+
+.JobList-list {
+  margin-top: 2rem;
+}
+
+.JobList .lead {
+  text-align: center;
+  color: #6c757d;
+  margin-top: 2rem;
+} 
