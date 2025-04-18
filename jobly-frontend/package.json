@@ -20,8 +20,6 @@
     "build": "GENERATE_SOURCEMAP=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "prebuild": "npm run build",
-    "postbuild": "echo 'Build completed successfully'",
     "start:prod": "serve -s build -l $PORT",
     "deploy": "npm install && npm run build"
   },

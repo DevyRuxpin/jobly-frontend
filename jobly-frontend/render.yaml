@@ -1,7 +1,7 @@
 services:
   - type: web
     name: jobly-frontend
-    buildCommand: cd jobly-frontend && npm install && npm run build
+    buildCommand: cd jobly-frontend && npm install && GENERATE_SOURCEMAP=false npm run build
     staticPublishPath: jobly-frontend/build
     envVars:
       - key: REACT_APP_BASE_URL
