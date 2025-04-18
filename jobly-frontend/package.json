@@ -21,7 +21,11 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "start:prod": "serve -s build -l $PORT",
-    "deploy": "npm install && npm run build"
+    "deploy": "npm install && npm run build",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "test:e2e": "npm run cypress:run",
+    "test:all": "npm test && npm run test:e2e"
   },
   "eslintConfig": {
     "extends": "react-app"

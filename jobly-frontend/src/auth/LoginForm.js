@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
-import Alert from "../common/Alert";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "./AuthContext";
+import "./LoginForm.css";
 
 /** Login form.
  *
@@ -13,89 +14,122 @@ import Alert from "../common/Alert";
  * Routed as /login
  */
 
-function LoginForm({ login }) {
-  const history = useHistory();
+function LoginForm() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
-  const [formErrors, setFormErrors] = useState([]);
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  console.debug(
-      "LoginForm",
-      "login=", typeof login,
-      "formData=", formData,
-      "formErrors", formErrors,
-  );
-
-  /** Handle form submit:
-   *
-   * Calls login func prop and, if successful, redirect to /companies.
-   */
-
-  async function handleSubmit(evt) {
-    evt.preventDefault();
-    let result = await login(formData);
-    if (result.success) {
-      history.push("/companies");
-    } else {
-      setFormErrors(result.errors);
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!formData.username.trim()) {
+      newErrors.username = "Username is required";
+    } else if (formData.username.length < 3) {
+      newErrors.username = "Username must be at least 3 characters";
     }
-  }
+    
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-  /** Update form data field */
-  function handleChange(evt) {
+  const handleChange = (evt) => {
     const { name, value } = evt.target;
-    setFormData(l => ({ ...l, [name]: value }));
-  }
+    setFormData((f) => ({
+      ...f,
+      [name]: value,
+    }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((e) => ({ ...e, [name]: "" }));
+    }
+  };
+
+  const handleSubmit = async (evt) => {
+    evt.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
+    setIsSubmitting(true);
+    try {
+      await login(formData);
+      navigate("/");
+    } catch (err) {
+      setErrors((e) => ({
+        ...e,
+        form: err.message || "Invalid username/password",
+      }));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
-      <div className="LoginForm">
-        <div className="container col-md-6 offset-md-3 col-lg-4 offset-lg-4">
-          <h3 className="mb-3">Log In</h3>
-
-          <div className="card">
-            <div className="card-body">
-              <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <label>Username</label>
-                  <input
-                      name="username"
-                      className="form-control"
-                      value={formData.username}
-                      onChange={handleChange}
-                      autoComplete="username"
-                      required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Password</label>
-                  <input
-                      type="password"
-                      name="password"
-                      className="form-control"
-                      value={formData.password}
-                      onChange={handleChange}
-                      autoComplete="current-password"
-                      required
-                  />
-                </div>
-
-                {formErrors.length
-                    ? <Alert type="danger" messages={formErrors} />
-                    : null}
-
-                <button
-                    className="btn btn-primary float-right"
-                    onSubmit={handleSubmit}
-                >
-                  Submit
-                </button>
-              </form>
-            </div>
+    <div className="LoginForm">
+      <div className="container col-md-6 offset-md-3 col-lg-4 offset-lg-4">
+        <h2 className="mb-3">Log In</h2>
+        <div className="card">
+          <div className="card-body">
+            {errors.form && (
+              <div className="alert alert-danger" role="alert">
+                {errors.form}
+              </div>
+            )}
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label htmlFor="username">Username</label>
+                <input
+                  id="username"
+                  name="username"
+                  className={`form-control ${errors.username ? "is-invalid" : ""}`}
+                  value={formData.username}
+                  onChange={handleChange}
+                  autoComplete="username"
+                  disabled={isSubmitting}
+                />
+                {errors.username && (
+                  <div className="invalid-feedback">{errors.username}</div>
+                )}
+              </div>
+              <div className="form-group">
+                <label htmlFor="password">Password</label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  className={`form-control ${errors.password ? "is-invalid" : ""}`}
+                  value={formData.password}
+                  onChange={handleChange}
+                  autoComplete="current-password"
+                  disabled={isSubmitting}
+                />
+                {errors.password && (
+                  <div className="invalid-feedback">{errors.password}</div>
+                )}
+              </div>
+              <button
+                className="btn btn-primary float-right"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Logging in..." : "Submit"}
+              </button>
+            </form>
           </div>
         </div>
       </div>
+    </div>
   );
 }
 
