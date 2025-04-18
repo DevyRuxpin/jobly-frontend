@@ -1,8 +1,16 @@
 import React from "react";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import { AuthContextProvider } from "./auth/AuthContext";
-import Routes from "./routes-nav/Routes";
+import ErrorBoundary from "./common/ErrorBoundary";
 import Navigation from "./routes-nav/Navigation";
+import Homepage from "./homepage/Homepage";
+import CompanyList from "./companies/CompanyList";
+import JobList from "./jobs/JobList";
+import CompanyDetail from "./companies/CompanyDetail";
+import LoginForm from "./auth/LoginForm";
+import ProfileForm from "./profiles/ProfileForm";
+import SignupForm from "./auth/SignupForm";
+import PrivateRoute from "./routes-nav/PrivateRoute";
 import "./App.css";
 
 /** Jobly application.
@@ -16,16 +24,48 @@ import "./App.css";
 
 function App() {
   return (
-    <BrowserRouter>
-      <AuthContextProvider>
-        <div className="App">
-          <Navigation />
-          <main>
-            <Routes />
-          </main>
-        </div>
-      </AuthContextProvider>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <Router basename={process.env.PUBLIC_URL}>
+        <AuthContextProvider>
+          <div className="App">
+            <Navigation />
+            <main className="container mt-4">
+              <Switch>
+                <Route exact path="/">
+                  <Homepage />
+                </Route>
+
+                <Route exact path="/login">
+                  <LoginForm />
+                </Route>
+
+                <Route exact path="/signup">
+                  <SignupForm />
+                </Route>
+
+                <PrivateRoute exact path="/companies">
+                  <CompanyList />
+                </PrivateRoute>
+
+                <PrivateRoute exact path="/jobs">
+                  <JobList />
+                </PrivateRoute>
+
+                <PrivateRoute exact path="/companies/:handle">
+                  <CompanyDetail />
+                </PrivateRoute>
+
+                <PrivateRoute path="/profile">
+                  <ProfileForm />
+                </PrivateRoute>
+
+                <Redirect to="/" />
+              </Switch>
+            </main>
+          </div>
+        </AuthContextProvider>
+      </Router>
+    </ErrorBoundary>
   );
 }
 

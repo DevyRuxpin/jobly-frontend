@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: jobly-frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: build
+    envVars:
+      - key: REACT_APP_BASE_URL
+        value: https://your-actual-backend-url.onrender.com 
