@@ -1,8 +1,10 @@
 services:
   - type: web
     name: jobly-frontend
-    buildCommand: cd jobly-frontend && npm install && GENERATE_SOURCEMAP=false npm run build
+    buildCommand: cd jobly-frontend && npm install && export NODE_OPTIONS=--openssl-legacy-provider && GENERATE_SOURCEMAP=false npm run build
     staticPublishPath: jobly-frontend/build
     envVars:
       - key: REACT_APP_BASE_URL
-        value: https://jobly-backend-zp0b.onrender.com 
+        value: https://jobly-backend-zp0b.onrender.com
+      - key: NODE_OPTIONS
+        value: --openssl-legacy-provider 
